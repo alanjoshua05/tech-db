@@ -1,4 +1,5 @@
 import streamlit as st
+import mysql.connector
 
 # Function to establish MySQL connection
 # Establish MySQL connection
