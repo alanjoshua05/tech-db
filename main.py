@@ -1,28 +1,61 @@
 import mysql.connector
-import pandas as pd
 import streamlit as st
 
-@st.cache(allow_output_mutation=True)
+# Function to establish MySQL connection
 def establish_connection():
-    mysql_config = st.secrets["connections"]["mysql"]
-    return mysql.connector.connect(
-        host=mysql_config["host"],
-        port=mysql_config["port"],
-        database=mysql_config["database"],
-        user=mysql_config["username"],
-        password=mysql_config["password"]
+    mydb = mysql.connector.connect(
+        host="127.0.0.1",  # Your host, usually localhost
+        user="root",       # Your username
+        password="alan#2005",  # Your password
+        database="crud_new1"   # Your database name
     )
+    return mydb
 
+# Main Streamlit app function
 def main():
-    conn = establish_connection()
+    # Title of the Streamlit app
+    st.title("User Information")
 
-    # Perform query.
-    query = 'SELECT * FROM crud_new1;'
-    df = pd.read_sql(query, conn)
+    # Text input for name
+    name = st.text_input('Enter your Name')
+    
+    # Text input for email
+    email = st.text_input('Enter your Email')
+    
+    # Submit button
+    sub = st.button("Submit")
 
-    # Print results.
-    for index, row in df.iterrows():
-        st.write(f"{row['id']} has a {row['email']}:")
-        
+    # When submit button is clicked
+    if sub:
+        # Establish MySQL connection
+        mydb = establish_connection()
+
+        # Check if the connection is successful
+        if mydb.is_connected():
+            st.write("Connected to MySQL database!")
+
+            # Create a cursor object to execute SQL queries
+            mycurs = mydb.cursor()
+
+            # SQL query to insert data into the users table
+            sql = "INSERT INTO user (name, email) VALUES (%s, %s)"
+            val = (name, email)
+
+            # Execute the SQL query
+            mycurs.execute(sql, val)
+
+            # Commit changes to the database
+            mydb.commit()
+
+            # Close the cursor and connection
+            mycurs.close()
+            mydb.close()
+
+            # Display success message
+            st.success("Data inserted successfully!")
+        else:
+            st.error("Failed to connect to MySQL database.")
+
+# Call the main function to run the Streamlit app
 if __name__ == "__main__":
     main()
