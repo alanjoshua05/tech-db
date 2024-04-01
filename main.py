@@ -23,3 +23,6 @@ def main():
     # Print results.
     for index, row in df.iterrows():
         st.write(f"{row['id']} has a {row['email']}:")
+
+if __name__ == "__main__":
+    main()
