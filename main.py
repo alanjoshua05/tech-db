@@ -1,15 +1,18 @@
 import streamlit as st
 
 # Function to establish MySQL connection
+# Establish MySQL connection
 def establish_connection():
-    # Print out all secrets to verify they are loaded correctly
-    st.write("Secrets Keys:", st.secrets.keys())
-
     # Get MySQL connection parameters from secrets
     mysql_config = st.secrets["connections"]["mysql"]
+    # Attempt to establish the connection
+    try:
+        conn = mysql.connector.connect(**mysql_config)
+        st.write("Connection established successfully!")
+        return conn
+    except Exception as e:
+        st.error(f"Failed to establish connection: {str(e)}")
 
-    # Establish MySQL connection
-    return mysql.connector.connect(**mysql_config)
 
 # Main Streamlit app function
 def main():
