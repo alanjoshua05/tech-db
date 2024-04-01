@@ -2,10 +2,8 @@ import streamlit as st
 import mysql.connector
 
 # Function to establish MySQL connection
-@st.cache(allow_output_mutation=True)
 def establish_connection():
-    mysql_config = st.secrets["mysql"]
-    return mysql.connector.connect(**mysql_config)
+    return mysql.connector.connect(**st.secrets["mysql"])
 
 # Main Streamlit app function
 def main():
