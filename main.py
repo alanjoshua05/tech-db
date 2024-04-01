@@ -13,4 +13,4 @@ df = conn.query(query, ttl=600)
 
 # Print results.
 for index, row in df.iterrows():
-    st.write(f"{row['name']} has a {row['email']}:")
+    st.write(f"{row['id']} has a {row['email']}:")
