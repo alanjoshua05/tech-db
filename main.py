@@ -1,9 +1,12 @@
 import streamlit as st
-import mysql.connector
 
 # Function to establish MySQL connection
 def establish_connection():
-    return mysql.connector.connect(**st.secrets["mysql"])
+    # Get MySQL connection parameters from secrets
+    mysql_config = st.secrets["connections.mysql"]
+
+    # Establish MySQL connection
+    return mysql.connector.connect(**mysql_config)
 
 # Main Streamlit app function
 def main():
@@ -13,32 +16,10 @@ def main():
     # Establish MySQL connection
     conn = establish_connection()
 
-    # Check if the connection is successful
-    if conn.is_connected():
-        st.write("Connected to MySQL database!")
+    # Perform query.
+    query = 'SELECT * FROM crud_new1;'
+    df = pd.read_sql(query, conn)
 
-        # Create a cursor object to execute SQL queries
-        cursor = conn.cursor()
-
-        # SQL query to select data from the users table
-        query = "SELECT * FROM crud_new1"
-
-        # Execute the SQL query
-        cursor.execute(query)
-
-        # Fetch all rows from the result set
-        rows = cursor.fetchall()
-
-        # Display fetched data
-        for row in rows:
-            st.write(f"{row[0]} has a {row[1]}:")
-
-        # Close the cursor and connection
-        cursor.close()
-        conn.close()
-    else:
-        st.error("Failed to connect to MySQL database.")
-
-# Call the main function to run the Streamlit app
-if __name__ == "__main__":
-    main()
+    # Print results.
+    for index, row in df.iterrows():
+        st.write(f"{row['id']} has a {row['email']}:")
