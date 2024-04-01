@@ -3,10 +3,10 @@ import streamlit as st
 # Function to establish MySQL connection
 def establish_connection():
     # Print out all secrets to verify they are loaded correctly
-    st.write("Secrets:", st.secrets)
+    st.write("Secrets Keys:", st.secrets.keys())
 
     # Get MySQL connection parameters from secrets
-    mysql_config = st.secrets["connections.mysql"]
+    mysql_config = st.secrets["connections"]["mysql"]
 
     # Establish MySQL connection
     return mysql.connector.connect(**mysql_config)
