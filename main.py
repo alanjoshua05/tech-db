@@ -1,26 +1,19 @@
-import streamlit as st
 import mysql.connector
+import pandas as pd
+import streamlit as st
 
-# Function to establish MySQL connection
-# Establish MySQL connection
+@st.cache(allow_output_mutation=True)
 def establish_connection():
-    # Get MySQL connection parameters from secrets
     mysql_config = st.secrets["connections"]["mysql"]
-    # Attempt to establish the connection
-    try:
-        conn = mysql.connector.connect(**mysql_config)
-        st.write("Connection established successfully!")
-        return conn
-    except Exception as e:
-        st.error(f"Failed to establish connection: {str(e)}")
+    return mysql.connector.connect(
+        host=mysql_config["host"],
+        port=mysql_config["port"],
+        database=mysql_config["database"],
+        user=mysql_config["username"],
+        password=mysql_config["password"]
+    )
 
-
-# Main Streamlit app function
 def main():
-    # Title of the Streamlit app
-    st.title("User Information")
-
-    # Establish MySQL connection
     conn = establish_connection()
 
     # Perform query.
@@ -30,6 +23,6 @@ def main():
     # Print results.
     for index, row in df.iterrows():
         st.write(f"{row['id']} has a {row['email']}:")
-
+        
 if __name__ == "__main__":
     main()
