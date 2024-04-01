@@ -1,26 +1,46 @@
 import streamlit as st
+import mysql.connector
 
-# Initialize connection.
+# Function to establish MySQL connection
 @st.cache(allow_output_mutation=True)
 def establish_connection():
-    try:
-        # Assuming 'mysql' is the correct secret name in Streamlit Secrets
-        return st.secrets["mysql"]
-    except Exception as e:
-        st.error(f"Failed to establish MySQL connection: {e}")
-        return None
+    mysql_config = st.secrets["mysql"]
+    return mysql.connector.connect(**mysql_config)
 
-# Establish MySQL connection
-conn = establish_connection()
+# Main Streamlit app function
+def main():
+    # Title of the Streamlit app
+    st.title("User Information")
 
-if conn:
-    try:
-        # Perform query.
-        query = 'SELECT * FROM crud_new1;'
-        df = conn.query(query, ttl=600)
+    # Establish MySQL connection
+    conn = establish_connection()
 
-        # Print results.
-        for index, row in df.iterrows():
-            st.write(f"{row['id']} has an email: {row['email']}")
-    except Exception as e:
-        st.error(f"Error executing query: {e}")
+    # Check if the connection is successful
+    if conn.is_connected():
+        st.write("Connected to MySQL database!")
+
+        # Create a cursor object to execute SQL queries
+        cursor = conn.cursor()
+
+        # SQL query to select data from the users table
+        query = "SELECT * FROM crud_new1"
+
+        # Execute the SQL query
+        cursor.execute(query)
+
+        # Fetch all rows from the result set
+        rows = cursor.fetchall()
+
+        # Display fetched data
+        for row in rows:
+            st.write(f"{row[0]} has a {row[1]}:")
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+    else:
+        st.error("Failed to connect to MySQL database.")
+
+# Call the main function to run the Streamlit app
+if __name__ == "__main__":
+    main()
